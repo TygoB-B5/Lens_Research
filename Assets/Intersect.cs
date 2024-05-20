@@ -9,10 +9,12 @@ public class LensFlareRenderer : MonoBehaviour
     public bool showReflection = true;
     public bool showRefraction = true;
     public bool showNormal = false;
-    public List<Lens> lenses = new List<Lens>();
+    public bool enableAperature = true;
+    public List<Hemisphere> lenses = new List<Hemisphere>();
     public Enviroment enviroment;
     public Aperature aperature;
     public Sensor sensor;
+    [Range(1, 16)] public int maxBounces;
 
     public void Update()
     {
@@ -65,19 +67,22 @@ public class LensFlareRenderer : MonoBehaviour
 
     private Color Draw(Ray ray, int bounce)
     {
-        if (bounce > 5) return Color.black;
+        if (bounce > maxBounces) return Color.black;
 
         // Find the closest lens intersection.
         float dist = float.PositiveInfinity;
-        Lens closestLens = null;
+        Hemisphere closestLens = null;
         Vector3 intersection = Vector3.zero;
 
 
         float aperatureDistance = float.PositiveInfinity;
         {
-            if (aperature.Intersects(ray, out float t))
+            if (enableAperature)
             {
-                aperatureDistance = t;
+                if (aperature.Intersects(ray, out float t))
+                {
+                    aperatureDistance = t;
+                }
             }
         }
 
@@ -90,7 +95,7 @@ public class LensFlareRenderer : MonoBehaviour
             }
         }
 
-        foreach (Lens lens in lenses)
+        foreach (var lens in lenses)
         {
             if (lens.Intersects(ray, out Vector3 I))
             {
@@ -107,16 +112,21 @@ public class LensFlareRenderer : MonoBehaviour
         // Sensor is the closest.
         if (sensorDistance < dist && sensorDistance < aperatureDistance)
         {
-            if (showPrimary) Debug.DrawLine(ray.origin, ray.origin + sensorDistance * ray.direction, Color.blue);
+            if (ray.origin.x == enviroment.texture.width / 2 && showPrimary) Debug.DrawLine(ray.origin, ray.origin + sensorDistance * ray.direction, Color.blue);
             return enviroment.GetSample(ray.origin + sensorDistance * ray.direction);
         }
 
         // Aperature is the closest.
         if (aperatureDistance < dist && aperatureDistance < sensorDistance)
         {
-            if (showPrimary) Debug.DrawLine(ray.origin, ray.origin + aperatureDistance * ray.direction, Color.cyan);
+            if (ray.origin.x == enviroment.texture.width / 2 && showPrimary) Debug.DrawLine(ray.origin, ray.origin + aperatureDistance * ray.direction, Color.cyan);
             return Color.black;
         }
+
+        // Check if ray is inside the bounds.
+        if (intersection.y >= enviroment.texture.height || intersection.x >= enviroment.texture.width ||
+            intersection.y < 0 || intersection.x < 0 ||
+            intersection.z < 0 || intersection.z - epsilon > enviroment.offset + epsilon) return Color.black;
 
         // Return if there is no intersection.
         if (closestLens == null && aperatureDistance == float.PositiveInfinity) return Color.black;
@@ -136,10 +146,10 @@ public class LensFlareRenderer : MonoBehaviour
         Vector3 reflectDir = Vector3.Reflect(ray.direction, normal);
         if (reflect) output += Draw(new Ray(intersection + reflectDir * epsilon, reflectDir), bounce + 1) * fresnel;
 
-        if (showPrimary) Debug.DrawLine(ray.origin, intersection, Color.magenta);
-        if (showNormal) Debug.DrawRay(intersection, normal * 0.1f);
-        if (showReflection) Debug.DrawLine(intersection, intersection + reflectDir, Color.red);
-        if (showRefraction) Debug.DrawLine(intersection, intersection + refractDir, Color.green);
+        if (ray.origin.x == enviroment.texture.width / 2 && showPrimary) Debug.DrawLine(ray.origin, intersection, Color.magenta);
+        if (ray.origin.x == enviroment.texture.width / 2 && showNormal) Debug.DrawRay(intersection, normal * 0.1f);
+        if (ray.origin.x == enviroment.texture.width / 2 && showReflection) Debug.DrawLine(intersection, intersection + reflectDir, Color.red);
+        if (ray.origin.x == enviroment.texture.width / 2 && showRefraction) Debug.DrawLine(intersection, intersection + refractDir, Color.green);
 
         return output;
     }

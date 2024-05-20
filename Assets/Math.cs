@@ -2,8 +2,7 @@ using UnityEngine;
 
 public class Math
 {
-    // Created by chatgpt.
-    public static void SphereEntry(Vector3 sphereCenter, float sphereRadius, Vector3 rayStart, Vector3 rayDirection, out float t)
+    public static void SphereHit(Vector3 sphereCenter, float sphereRadius, Vector3 rayStart, Vector3 rayDirection, out float t, out float t2)
     {
         Vector3 oc = rayStart - sphereCenter;
         float a = Vector3.Dot(rayDirection, rayDirection);
@@ -19,27 +18,16 @@ public class Math
         {
             t = (-b - Mathf.Sqrt(discriminant)) / (2.0f * a);
         }
-    }
-
-    // Created by chatgpt.
-    public static void SphereExit(Vector3 sphereCenter, float sphereRadius, Vector3 rayStart, Vector3 rayDirection, out float t)
-    {
-        Vector3 oc = rayStart - sphereCenter;
-        float a = Vector3.Dot(rayDirection, rayDirection);
-        float b = 2.0f * Vector3.Dot(oc, rayDirection);
-        float c = Vector3.Dot(oc, oc) - (sphereRadius * sphereRadius);
-        float discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0)
         {
-            t = -1.0f;
+            t2 = -1.0f;
         }
         else
         {
-            t = (-b + Mathf.Sqrt(discriminant)) / (2.0f * a);
+            t2 = (-b + Mathf.Sqrt(discriminant)) / (2.0f * a);
         }
     }
-
 
     public static Vector3 Refract(Vector3 incidentDirection, Vector3 normal, float refractiveIndex)
     {

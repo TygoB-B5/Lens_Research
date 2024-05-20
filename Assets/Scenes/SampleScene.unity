@@ -367,36 +367,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showPrimary: 1
-  showReflection: 0
+  showReflection: 1
   showRefraction: 1
-  showNormal: 0
+  showNormal: 1
+  enableAperature: 1
   lenses:
-  - curvature: 90.5
-    ior: 0.6666667
+  - ior: 0.6666667
     iorOut: 1
-    iorIn: 1.5
-    concave: 0
-    defaultOffset: {x: 16, y: 16, z: 6.5}
-  - curvature: 123.5
-    ior: 1.5
+    iorIn: 0.7
+    center: {x: 32, y: 32, z: 74.9}
+    radius: 61.7
+    direction: {x: 0, y: 0, z: -1}
+    maxAngle: 76.3
+  - ior: 0.6666667
     iorOut: 1
-    iorIn: 1.5
-    concave: 1
-    defaultOffset: {x: 16, y: 16, z: 25.8}
+    iorIn: 0.7
+    center: {x: 32, y: 32, z: 29.08}
+    radius: 36.7
+    direction: {x: 0, y: 0, z: 1}
+    maxAngle: 49.3
   enviroment:
     texture: {fileID: 2800000, guid: 52a2020ad07abe24496c23c20af5acd1, type: 3}
-    offset: 249.5
+    offset: 211.1
   aperature:
-    position: {x: 16, y: 16, z: 26.5}
+    position: {x: 32, y: 32, z: 51.7}
     numPoints: 5
-    radius: 1000
-    rotationOffset: 7.08
-    width: 32
-    height: 32
+    radius: 76.4
+    rotationOffset: 7.37
+    width: 64
+    height: 64
   sensor:
     output: {fileID: 8400000, guid: 955852c6424943d46b3591e9abd52504, type: 2}
+  maxBounces: 5
   refract: 1
-  reflect: 0
+  reflect: 1
 --- !u!4 &626833282
 Transform:
   m_ObjectHideFlags: 0
